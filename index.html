@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Financial Metrics Dashboard — Dummy Data</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    :root{ --bg:#ffffff; --card:#ffffff; --ink:#0f172a; --muted:#475569; --border:#e2e8f0; --ring:#2563eb33; --shadow:0 6px 22px rgba(2,6,23,.06); }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    .wrap{max-width:1200px;margin:0 auto;padding:14px}
+    header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+    .head-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 14px}
+    .title h1{margin:0;font-size:20px;font-weight:700} .title small{color:var(--muted)}
+    .toolbar{display:flex;gap:8px}
+    .btn{background:#f8fafc;color:#0f172a;border:1px solid var(--border);padding:8px 10px;border-radius:10px;cursor:pointer}
+    .btn:hover{background:#f1f5f9}
+    details.filters{margin:10px 14px;border:1px solid var(--border);border-radius:12px;background:#fafbff;box-shadow:var(--shadow)}
+    details.filters>summary{list-style:none;cursor:pointer;padding:12px 14px;color:var(--muted)}
+    details.filters[open]>summary{border-bottom:1px solid var(--border)}
+    .filters-grid{display:grid;gap:10px;grid-template-columns:repeat(9,minmax(140px,1fr));padding:12px}
+    @media (max-width:1200px){.filters-grid{grid-template-columns:repeat(3,minmax(160px,1fr))}}
+    @media (max-width:700px){.filters-grid{grid-template-columns:repeat(2,minmax(150px,1fr))}}
+    label{display:grid;gap:6px;font-size:12px;color:var(--muted)}
+    select{appearance:none;background:#ffffff;color:#0f172a;border:1px solid var(--border);border-radius:10px;padding:8px 10px;outline:none}
+    select:focus{box-shadow:inset 0 0 0 1px var(--ring);border-color:var(--ring)}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin:0 14px 14px;box-shadow:var(--shadow)}
+    .panel h3{margin:0 0 6px;font-size:15px;font-weight:600}
+    .panel .sub{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .chart{height:360px; position:relative}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media (max-width:1100px){.grid-2{grid-template-columns:1fr}}
+    .muted{color:var(--muted);font-size:12px}
+    footer{color:var(--muted);font-size:12px;margin:12px 0 30px;text-align:center}
+    #diag{position:fixed;bottom:10px;left:10px;background:#0f172a;color:white;padding:8px 10px;border-radius:8px;font-size:12px;opacity:.9;z-index:50}
+    .empty{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:14px}
+    #matchCount{margin-left:auto;color:#334155;font-size:12px}
+  </style>
+</head>
+<body>
+  <div id="diag">Loading…</div>
+  <header>
+    <div class="head-row wrap">
+      <div class="title">
+        <h1>Financial Metrics Dashboard</h1>
+        <small id="asOf"></small>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="toggleFilters">Show filters</button>
+        <button class="btn" id="resetBtn">Reset to All</button>
+      </div>
+    </div>
+    <details class="filters" id="filtersBlock">
+      <summary>Filters</summary>
+      <div class="filters-grid wrap" style="padding-top:0;">
+        <label>By country
+          <select id="f_country">
+            <option selected>All</option>
+            <option>Indonesia</option><option>Malaysia</option><option>Phillipine</option><option>Thailand</option><option>Vietnam</option>
+          </select>
+        </label>
+        <label>By partner category
+          <select id="f_partnerCat">
+            <option selected>All</option>
+            <option>VC Partner</option><option>Referral partner</option><option>AM managed Partners</option><option>Alliance Partner</option><option>Distribution Partner</option><option>TPI Partner</option><option>Embedded partner</option><option>Refferal Others</option>
+          </select>
+        </label>
+        <label>By agreement type
+          <select id="f_agreement">
+            <option selected>All</option>
+            <option>Revenue Sharing</option><option>Non Revenue Sharing</option>
+          </select>
+        </label>
+        <label>By Industry
+          <select id="f_industry">
+            <option selected>All</option>
+            <option>Digital Product</option><option>Entertainment</option><option>Property</option><option>Financial Service</option><option>Travel&Hospitality</option><option>Non Profit</option><option>Retail</option><option>Services</option><option>Other</option>
+          </select>
+        </label>
+        <label>By CPM
+          <select id="f_cpm">
+            <option selected>All</option>
+            <option>Charisse</option><option>OT</option><option>Hanna</option><option>Rizki</option>
+          </select>
+        </label>
+        <label>By product
+          <select id="f_product">
+            <option selected>All</option>
+            <option>VA</option><option>eWallet</option><option>Cards</option><option>Direct Debit</option><option>QR Code</option>
+          </select>
+        </label>
+        <label>By Lead Sales flow
+          <select id="f_lead">
+            <option selected>All</option>
+            <option>Self Serve</option><option>Sales</option><option>CPM</option>
+          </select>
+        </label>
+        <label>By Marketing activity
+          <select id="f_mkt">
+            <option selected>All</option>
+            <option>Event campaign</option><option>Campaign</option><option>Non Marketing</option>
+          </select>
+        </label>
+        <label>By merchant age
+          <select id="f_age">
+            <option selected>All</option>
+            <option>Less than 6 months transacting</option><option>More than 6 months transacting</option>
+          </select>
+        </label>
+      </div>
+    </details>
+  </header>
+
+  <main class="wrap">
+    <section class="panel">
+      <div style="display:flex;align-items:center;gap:10px">
+        <h3 style="margin:0">A. Net Revenue vs Target (MTD cumulative)</h3>
+        <span id="matchCount"></span>
+      </div>
+      <div class="sub">Current month actual vs target & projection, plus prior 3 months actual (aligned by day).</div>
+      <div id="ch_net_vs_target" class="chart"><div class="empty" style="display:none">No matching data for current filters.</div></div>
+    </section>
+
+    <section class="panel">
+      <h3>B–E. Revenue & TPV — MTD cumulative (last 4 months)</h3>
+      <div class="grid-2">
+        <div>
+          <div class="sub">Gross revenue</div>
+          <div id="ch_gross_mtd" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+        <div>
+          <div class="sub">Net revenue</div>
+          <div id="ch_net_mtd" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+        <div>
+          <div class="sub">Net Net revenue</div>
+          <div id="ch_netnet_mtd" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+        <div>
+          <div class="sub">TPV</div>
+          <div id="ch_tpv_mtd" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>F. Net Net Margin</h3>
+      <div class="grid-2">
+        <div>
+          <div class="sub">MTD cumulative margin (last 4 months)</div>
+          <div id="ch_margin_netnet_mtd" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+        <div>
+          <div class="sub">Month-on-Month (last 12 months)</div>
+          <div id="ch_margin_netnet_bars" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>G. Net Margin</h3>
+      <div class="grid-2">
+        <div>
+          <div class="sub">MTD cumulative margin (last 4 months)</div>
+          <div id="ch_margin_net_mtd" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+        <div>
+          <div class="sub">Month-on-Month (last 12 months)</div>
+          <div id="ch_margin_net_bars" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>H. Gross Margin</h3>
+      <div class="grid-2">
+        <div>
+          <div class="sub">MTD cumulative margin (last 4 months)</div>
+          <div id="ch_margin_gross_mtd" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+        <div>
+          <div class="sub">Month-on-Month (last 12 months)</div>
+          <div id="ch_margin_gross_bars" class="chart"><div class="empty" style="display:none">No data.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>Charts use seeded dummy data and update with the filters. Replace the generator in <code>financial.js</code> later.</footer>
+  </main>
+
+  <script defer src="financial.js"></script>
+</body>
+</html>
