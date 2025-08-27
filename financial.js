@@ -284,29 +284,14 @@
       }
     }
 
-    // Net Net margin
-    Plotly.react(
-      document.getElementById('ch_margin_netnet_mtd'),
-      hasData ? mtdMarginTraces('netnet','tpv') : [],
-      layoutPercent('Net Net Margin'), {displayModeBar:true, responsive:true}
-    );
-    drawBars('ch_margin_netnet_bars', hasData ? barsForRatio('netnet','tpv') : [], 'Net Net Margin');
+    // Net Net margin (MTD line) removed by request
+drawBars('ch_margin_netnet_bars', hasData ? barsForRatio('netnet','tpv') : [], 'Net Net Margin');
 
-    // Net margin
-    Plotly.react(
-      document.getElementById('ch_margin_net_mtd'),
-      hasData ? mtdMarginTraces('net','tpv') : [],
-      layoutPercent('Net Margin'), {displayModeBar:true, responsive:true}
-    );
-    drawBars('ch_margin_net_bars', hasData ? barsForRatio('net','tpv') : [], 'Net Margin');
+    // Net margin (MTD line) removed by request
+drawBars('ch_margin_net_bars', hasData ? barsForRatio('net','tpv') : [], 'Net Margin');
 
-    // Gross margin
-    Plotly.react(
-      document.getElementById('ch_margin_gross_mtd'),
-      hasData ? mtdMarginTraces('gross','tpv') : [],
-      layoutPercent('Gross Margin'), {displayModeBar:true, responsive:true}
-    );
-    drawBars('ch_margin_gross_bars', hasData ? barsForRatio('gross','tpv') : [], 'Gross Margin');
+    // Gross margin (MTD line) removed by request
+drawBars('ch_margin_gross_bars', hasData ? barsForRatio('gross','tpv') : [], 'Gross Margin');
 
     if(diag) diag.style.display = 'none';
   }
